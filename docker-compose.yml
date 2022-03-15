@@ -1,0 +1,68 @@
+version: '3.9'
+
+networks:
+    default-net:
+        ipam:
+            driver: default
+            config:
+                - subnet: "10.1.201.1/24"
+
+services:
+    rabbitmq:
+        container_name: message-queue
+        privileged: true
+        restart: always
+        ports:
+            - '24572:15672'
+            - '5672:5672'
+        environment:
+            - RABBITMQ_DEFAULT_USER=bonus
+            - RABBITMQ_DEFAULT_PASS=qhsjtm300%
+            - TZ="Asia/Seoul"
+        networks:
+            - 'default-net'
+        image: rabbitmq:3.8-management
+
+    # MongoDB
+    mongo:
+        container_name: mongo
+        privileged: true
+        ports:
+            - '27017:27017'
+            - '27018:27018'
+            - '27019:27019'
+            - '28017:28017'
+        restart: always
+        volumes:
+            # - ./mongo/conf/mongod.conf:/etc/mongod.conf
+            - /storage/b/mongo:/data/db
+        environment:
+            - MONGO_INITDB_ROOT_USERNAME=bonus
+            - MONGO_INITDB_ROOT_PASSWORD=qhsjtm300%
+            - TZ="Asia/Seoul"
+        networks:
+            - 'default-net'
+        image: mongo:4.4.1
+
+    service-simple-rest-server:
+        container_name: service-simple-rest-server
+        privileged: true
+        ports:
+            - '24573:24573'
+        restart: always
+        volumes:
+            # - ./service-simple-rest-server:/service-simple-rest-server
+            - /var/log/service-simple-rest-server/:/var/log/service-simple-rest-server/
+        environment:
+            TZ: "Asia/Seoul"
+            PYTHONUNBUFFERED: 1
+        logging:
+            driver: "json-file"
+            options:
+                max-file: "5"
+                max-size: "1m"
+        networks:
+            - 'default-net'
+        # build:
+        #     context: ./service-simple-rest-server/
+        image: joppd/simple-rest-server:v0.1.0
