@@ -44,25 +44,24 @@ services:
             - 'default-net'
         image: mongo:4.4.1
 
-    service-simple-rest-server:
-        container_name: service-simple-rest-server
+    service-spring-template:
+        container_name: service-spring-template
         privileged: true
         ports:
-            - '24573:24573'
+            - '25470:25470'
         restart: always
-        volumes:
+        # volumes:
             # - ./service-simple-rest-server:/service-simple-rest-server
-            - /var/log/service-simple-rest-server/:/var/log/service-simple-rest-server/
+            # - /var/log/service-simple-rest-server/:/var/log/service-simple-rest-server/
         environment:
             TZ: "Asia/Seoul"
-            PYTHONUNBUFFERED: 1
         logging:
-            driver: "json-file"
             options:
-                max-file: "5"
-                max-size: "1m"
+                max-size: '100m'
+                max-file: '50'
+            driver: json-file
         networks:
             - 'default-net'
         # build:
         #     context: ./service-simple-rest-server/
-        image: joppd/simple-rest-server:v0.1.0
+        image: joppd/service-spring-template:0.1.0
